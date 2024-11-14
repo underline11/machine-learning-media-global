@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Python logs and debug
+*.log
+*.out
+*.err
+
+# IDE settings
+.vscode/
+.idea/
+
+# Tkinter specific cache files (if any)
+*.tcl
+*.tk
+
+# PyInstaller (if used)
+dist/
+build/
+*.spec
+
+# Ignore custom configuration or environment files
+.env
+config.yaml
+secrets.json
