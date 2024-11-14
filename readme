@@ -1,0 +1,39 @@
+# Calculadora de Média Escolar
+
+Este é um sistema desenvolvido em Python com a interface gráfica do Tkinter para calcular a média escolar de um aluno com base nas notas de três trimestres. O sistema permite ao usuário inserir as notas de cada matéria, as faltas do aluno e calcular se o aluno foi aprovado ou reprovado, considerando tanto as notas quanto a frequência.
+
+## Funcionalidades
+
+- O aluno pode inserir as notas do 1º e 2º trimestres.
+- O sistema calcula a nota necessária no 3º trimestre para o aluno alcançar uma média mínima de **18 pontos**.
+- O cálculo de aprovação é realizado com base nas notas dos três trimestres.
+- O sistema também verifica a frequência do aluno, considerando que ele não pode faltar mais de **25%** das aulas.
+- Se o aluno for aprovado em todas as matérias e alcançar a média total, ele é considerado aprovado.
+- Exibição do boletim com as notas, faltas e status de aprovação de cada matéria.
+
+## Tecnologias Utilizadas
+
+- **Python 3.x**
+- **Tkinter** (para a interface gráfica)
+- **Tkinter.messagebox** (para exibir resultados e mensagens)
+
+## Como Usar
+
+1. Clone este repositório:
+    
+    git clone https://github.com/seu-usuario/calculadora-media-escolar.git
+   
+
+2. Instale o Python 3.x no seu computador (caso ainda não tenha).
+
+3. Execute o código Python:
+    
+    python calculadora_media_escolar.py
+    ```
+
+4. Insira as notas dos três trimestres e as faltas para cada matéria.
+5. Clique no botão "Calcular Resultado" para ver o boletim com o status de aprovação.
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
