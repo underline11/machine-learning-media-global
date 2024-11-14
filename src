@@ -27,62 +27,19 @@ def calcular_resultado():
 
         # Definição do total de pontos para aprovação
         total_pontos_necessarios = 288  # 6*16=96, multiplicado por 3 para os 3 trimestres
+        total_pontos = sum(notas_trimestre_1) + sum(notas_trimestre_2)  # Soma dos pontos já conquistados nos 2 trimestres
 
-        resultado_materias = []
-        passou_em_todas = True  # Variável para verificar aprovação geral
-        reprovado_em_materias = 0  # Contador de matérias reprovadas
-        total_pontos = 0  # Total de pontos acumulados nas matérias
+        # Calcular quantos pontos ainda são necessários para atingir o total de pontos necessários
+        pontos_para_passar = max(0, total_pontos_necessarios - total_pontos)
 
-        for i, materia in enumerate(materias):
-            total_primeiros_trimestres = notas_trimestre_1[i] + notas_trimestre_2[i]
-            nota_necessaria = max(0, 18 - total_primeiros_trimestres)  # Nota necessária no 3º trimestre para 18 pontos totais
-            media_final = (total_primeiros_trimestres + nota_necessaria) / 3
-
-            # Verificando se o aluno será reprovado na matéria por nota
-            if total_primeiros_trimestres < 12 or (total_aulas - faltas[i]) < total_aulas * 0.75:
-                status = "Reprovado"
-                passou_em_todas = False  # Se reprovar em uma matéria, não passa no geral
-                reprovado_em_materias += 1  # Incrementa o contador de matérias reprovadas
-            else:
-                status = "Aprovado"
-                total_pontos += total_primeiros_trimestres + nota_necessaria  # Soma os pontos já conquistados nas matérias
-
-            resultado_materias.append({
-                "materia": materia,
-                "trimestre_1": notas_trimestre_1[i],
-                "trimestre_2": notas_trimestre_2[i],
-                "necessario_trimestre_3": nota_necessaria,
-                "media_final": media_final,
-                "faltas": faltas[i],
-                "status": status
-            })
-
-        # Verifica se o aluno é reprovado por ter mais de 4 matérias reprovadas
-        if reprovado_em_materias >= 4:
-            status_final = "Reprovado por mais de 4 matérias"
-        else:
-            if total_pontos >= total_pontos_necessarios:
-                status_final = "Aprovado"
-            else:
-                status_final = "Reprovado"
-        
         # Calculando a média global
         media_global = total_pontos / 288  # Média global considerando 288 pontos totais para aprovação
-        
-        # Exibir boletim com notas e resultados de aprovação/reprovação por matéria
+
+        # Exibir boletim com notas e resultado global
         boletim = "Boletim do Aluno:\n\n"
-        for resultado in resultado_materias:
-            boletim += (f"{resultado['materia']:<50}\n"
-                        f"  T1: {resultado['trimestre_1']:<5} "
-                        f"T2: {resultado['trimestre_2']:<5} "
-                        f"Necessário T3: {resultado['necessario_trimestre_3']:<5.2f} "
-                        f"Faltas: {resultado['faltas']}  Status: {resultado['status']}\n"
-                        + "-" * 80 + "\n")
-        
-        # Exibir situação geral
-        boletim += f"\nFrequência Total: {frequencia_total:.2f}%\n"
+        boletim += f"Frequência Total: {frequencia_total:.2f}%\n"
         boletim += f"Média Global: {media_global:.2f}\n"
-        boletim += f"\nSituação Geral: {status_final}\n"
+        boletim += f"Pontos necessários para passar no geral: {pontos_para_passar}\n"
         
         messagebox.showinfo("Boletim", boletim)
     except ValueError:
