@@ -1,0 +1,146 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def mostrar_informacoes():
+    media_necessaria = 6
+    maximo_faltas = int(total_aulas * 0.25)
+    informacoes = (f"Média mínima necessária para aprovação: {media_necessaria}\n"
+                   f"Limite de faltas permitidas: {maximo_faltas}")
+    messagebox.showinfo("Informações de Aprovação", informacoes)
+
+def calcular_resultado():
+    try:
+        # Coletando as notas do primeiro e segundo trimestre e as faltas de cada matéria
+        notas_trimestre_1 = [float(entry.get()) for entry in entradas_trimestre_1]
+        notas_trimestre_2 = [float(entry.get()) for entry in entradas_trimestre_2]
+        faltas = [int(entry.get()) for entry in entradas_faltas]
+
+        # Verificação de entrada válida para notas
+        for nota in notas_trimestre_1 + notas_trimestre_2:
+            if nota < 0 or nota > 10:
+                messagebox.showerror("Erro", "Valor Inválido, por favor digite o número correto (entre 0 e 10).")
+                return
+
+        # Cálculo da frequência total
+        total_faltas = sum(faltas)
+        frequencia_total = ((total_aulas * len(materias) - total_faltas) / (total_aulas * len(materias))) * 100
+
+        # Definição do total de pontos para aprovação
+        total_pontos_necessarios = 288  # 6*16=96, multiplicado por 3 para os 3 trimestres
+
+        resultado_materias = []
+        passou_em_todas = True  # Variável para verificar aprovação geral
+        reprovado_em_materias = 0  # Contador de matérias reprovadas
+        total_pontos = 0  # Total de pontos acumulados nas matérias
+
+        for i, materia in enumerate(materias):
+            total_primeiros_trimestres = notas_trimestre_1[i] + notas_trimestre_2[i]
+            nota_necessaria = max(0, 18 - total_primeiros_trimestres)  # Nota necessária no 3º trimestre para 18 pontos totais
+            media_final = (total_primeiros_trimestres + nota_necessaria) / 3
+
+            # Verificando se o aluno será reprovado na matéria por nota
+            if total_primeiros_trimestres < 12 or (total_aulas - faltas[i]) < total_aulas * 0.75:
+                status = "Reprovado"
+                passou_em_todas = False  # Se reprovar em uma matéria, não passa no geral
+                reprovado_em_materias += 1  # Incrementa o contador de matérias reprovadas
+            else:
+                status = "Aprovado"
+                total_pontos += total_primeiros_trimestres + nota_necessaria  # Soma os pontos já conquistados nas matérias
+
+            resultado_materias.append({
+                "materia": materia,
+                "trimestre_1": notas_trimestre_1[i],
+                "trimestre_2": notas_trimestre_2[i],
+                "necessario_trimestre_3": nota_necessaria,
+                "media_final": media_final,
+                "faltas": faltas[i],
+                "status": status
+            })
+
+        # Verifica se o aluno é reprovado por ter mais de 4 matérias reprovadas
+        if reprovado_em_materias >= 4:
+            status_final = "Reprovado por mais de 4 matérias"
+        else:
+            if total_pontos >= total_pontos_necessarios:
+                status_final = "Aprovado"
+            else:
+                status_final = "Reprovado"
+        
+        # Calculando a média global
+        media_global = total_pontos / 288  # Média global considerando 288 pontos totais para aprovação
+        
+        # Exibir boletim com notas e resultados de aprovação/reprovação por matéria
+        boletim = "Boletim do Aluno:\n\n"
+        for resultado in resultado_materias:
+            boletim += (f"{resultado['materia']:<50}\n"
+                        f"  T1: {resultado['trimestre_1']:<5} "
+                        f"T2: {resultado['trimestre_2']:<5} "
+                        f"Necessário T3: {resultado['necessario_trimestre_3']:<5.2f} "
+                        f"Faltas: {resultado['faltas']}  Status: {resultado['status']}\n"
+                        + "-" * 80 + "\n")
+        
+        # Exibir situação geral
+        boletim += f"\nFrequência Total: {frequencia_total:.2f}%\n"
+        boletim += f"Média Global: {media_global:.2f}\n"
+        boletim += f"\nSituação Geral: {status_final}\n"
+        
+        messagebox.showinfo("Boletim", boletim)
+    except ValueError:
+        messagebox.showerror("Erro", "Valor Inválido, por favor digite o número correto.")
+
+# Interface Gráfica com Tkinter
+root = tk.Tk()
+root.title("Calculadora de Média Escolar")
+root.geometry("800x1000")
+
+materias = [
+    "Inglês", "Matemática", "Português", "Artes", "Biologia", 
+    "Educação Física", "História", "Geografia", "Física", 
+    "Química", "Língua Estrangeira Espanhol", "Projeto de Vida", 
+    "Experimentação e Outras Práticas Investigativas", "Sociologia", "Filosofia",
+    "Conhecimento Científico em Ciências da Natureza"
+]
+
+entradas_trimestre_1 = []
+entradas_trimestre_2 = []
+entradas_faltas = []
+
+# Quantidade total de aulas no ano
+total_aulas = 200
+
+# Botão para mostrar informações de aprovação e limite de faltas
+botao_informacoes = tk.Button(root, text="Mostrar Informações de Aprovação", command=mostrar_informacoes)
+botao_informacoes.pack()
+
+# Labels e entradas de notas para o 1º e 2º trimestre e faltas por matéria (dispostas em uma coluna única)
+frame_notas = tk.Frame(root)
+frame_notas.pack()
+
+# Loop para gerar as entradas de notas e faltas para todas as matérias
+for i in range(len(materias)):
+    # Nome da matéria
+    tk.Label(frame_notas, text=materias[i]).grid(row=i*2, column=0, padx=5, pady=5, sticky='w')
+    
+    # Entradas para o 1º trimestre
+    entry_t1 = tk.Entry(frame_notas, width=5)
+    entry_t1.grid(row=i*2, column=1, padx=5, pady=5)
+    entradas_trimestre_1.append(entry_t1)
+    
+    # Entradas para o 2º trimestre
+    entry_t2 = tk.Entry(frame_notas, width=5)
+    entry_t2.grid(row=i*2, column=2, padx=5, pady=5)
+    entradas_trimestre_2.append(entry_t2)
+    
+    # Frase indicando onde colocar as faltas
+    tk.Label(frame_notas, text="Coloque suas faltas aqui").grid(row=i*2, column=3, padx=5, pady=5, sticky='w')
+    
+    # Entrada para as faltas
+    entry_faltas = tk.Entry(frame_notas, width=5)
+    entry_faltas.grid(row=i*2, column=4, padx=10)
+    entradas_faltas.append(entry_faltas)
+
+# Botão para calcular resultado
+botao_calcular = tk.Button(root, text="Calcular Resultado", command=calcular_resultado)
+botao_calcular.pack()
+
+root.mainloop()
